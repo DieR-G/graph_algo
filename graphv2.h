@@ -1,0 +1,2 @@
+struct Arc;
+struct Node;
