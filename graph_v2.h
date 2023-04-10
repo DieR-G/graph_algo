@@ -1,6 +1,5 @@
 #include <memory>
 #include <vector>
-#include <list>
 #include <tuple>
 #include <algorithm>
 #include <queue>
@@ -11,7 +10,7 @@ struct Node;
 
 struct Node{
     unsigned int id;
-    std::list<std::list<Arc>::iterator> arcs;
+    std::vector<std::vector<Arc>::iterator> arcs;
 
     Node(const unsigned int _id) : id(_id){};
 
@@ -50,13 +49,13 @@ struct Arc{
 };
 
 class Graph{
-    std::list<Node> nodes;
-    std::list<Arc> arcs;
+    std::vector<Node> nodes;
+    std::vector<Arc> arcs;
     struct Path{
         const Node *start = nullptr;
         const Node *end = nullptr;
         double cost;
-        std::list<std::list<Arc>::iterator> arcs;
+        std::vector<std::vector<Arc>::iterator> arcs;
         bool operator>(const Path &rhs) const{
             return cost > rhs.cost;
         }
@@ -65,7 +64,7 @@ class Graph{
     Path _shortest_path(const Node *starting_node, const Node *ending_node){
         std::priority_queue<Path, std::vector<Path>, std::greater<Path>> pq;
         std::set<const Node*> visited_nodes;
-        Path start = {starting_node, starting_node, 0.0, std::list<std::list<Arc>::iterator>()};
+        Path start = {starting_node, starting_node, 0.0, std::vector<std::vector<Arc>::iterator>()};
         pq.push(start);
         Path current_path;
         do{
@@ -92,15 +91,18 @@ class Graph{
     }
 
     Graph create_graph_from_path(Path graph_path){
-        std::set<Node> node_set;
-        std::list<Arc> arc_list;
-        for( auto a : graph_path.arcs ){
-            arc_list.push_back(*a);
-            node_set.insert(*a->start);
-            node_set.insert(*a->end);
+        //std::set<Node> node_set;
+        std::vector<Node> node_vector;
+        std::vector<Arc> arc_vector;
+        Node current_node = *graph_path.start;
+        node_vector.push_back(current_node);
+        for( auto arc : graph_path.arcs ){
+            arc_vector.push_back(*arc);
+            current_node = (*(arc->start) == current_node) ? *arc->end : *arc->start;
+            node_vector.push_back(current_node);
         }
-        std::list<Node> node_list(node_set.begin(), node_set.end());
-        return Graph(node_list, arc_list);
+        //std::vector<Node> node_vector(node_set.begin(), node_set.end());
+        return Graph(node_vector, arc_vector);
     }
     Graph _dfs(const Node *current_node, const Node *end_node, Graph &current_path){
         current_path.add_node(*current_node);
@@ -121,7 +123,7 @@ class Graph{
 public:
     Graph(){}
     Graph(const Graph &rhs) : nodes(rhs.nodes), arcs(rhs.arcs){}
-    Graph(std::list<Node> _nodes, std::list<Arc> _arcs) : nodes(_nodes), arcs(_arcs){}
+    Graph(std::vector<Node> _nodes, std::vector<Arc> _arcs) : nodes(_nodes), arcs(_arcs){}
     Graph(std::vector<unsigned int> _nodes, std::vector<unsigned int> _arcs){
         for (auto n_id : _nodes){
             nodes.push_back(Node(n_id));
@@ -148,11 +150,11 @@ public:
         }
     }
 
-    const std::list<Arc> get_arcs(){
+    const std::vector<Arc> get_arcs(){
         return arcs;
     }
 
-    const std::list<Node> get_nodes(){
+    const std::vector<Node> get_nodes(){
         return nodes;
     }
 
