@@ -34,7 +34,21 @@ def read_connections(file):
         aux_string = ''
         count += 1
     res.close()
-        
+
+def read_ids(file):
+    lines = file.readlines()
+    count = 1
+    aux_string = ''
+    res = open("processed_ids.txt", "a")
+    for l in lines:
+        aux_string += l.strip() + ','
+        res.write(aux_string)
+        if((count % 10)==0):
+            res.write('\n')
+        aux_string = ''
+        count += 1
+    res.close()
 
 #print(read_single_digits(open('arcs.csv')))
-read_connections(open('connections.csv'))
+#read_connections(open('connections.csv'))
+read_ids(open('ids.csv'))
