@@ -194,4 +194,12 @@ public:
     Graph shortest_path(const Node *from, const Node *to){
         return create_graph_from_path(_shortest_path(from, to));
     }
+
+    double get_total_cost(){
+        double total = 0.0;
+        for(auto a : arcs){
+            total += a.cost;
+        }
+        return total;
+    }
 };
